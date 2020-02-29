@@ -1,0 +1,27 @@
+version: '2.2'
+services:
+  rabbit:
+    image: "rabbitmq"
+    ports: 
+     - "5680:5672"  
+  consumer_in_knot:
+    build: 
+      context: .
+      dockerfile: consumer_in_knotDockerfile
+    restart: always
+    depends_on: 
+     - rabbit
+  consumer_route:
+    build: 
+      context: .
+      dockerfile: consumer_routeDockerfile
+    restart: always
+    depends_on: 
+     - rabbit
+  test_system:
+    build: 
+      context: .
+      dockerfile: test_systemDockerfile
+    restart: always
+    depends_on: 
+     - rabbit
