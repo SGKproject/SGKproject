@@ -1,0 +1,9 @@
+FROM python:3.6
+
+RUN pip install opcua pandas IPython cryptography xlrd
+WORKDIR /code
+COPY server.py /code
+COPY ActualDataFeb2020.xlsx /code
+EXPOSE 4840
+
+CMD ["python3", "server.py"]

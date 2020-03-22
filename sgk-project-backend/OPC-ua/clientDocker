@@ -1,0 +1,8 @@
+FROM python:3.6
+
+RUN pip install opcua pandas IPython cryptography xlrd
+WORKDIR /code
+COPY client.py /code
+EXPOSE 4840
+
+CMD ["python3", "client.py"]
