@@ -6,7 +6,7 @@ import pandas as pd
 from IPython import embed
 
 URL = 'opc.tcp://0.0.0.0:4840'
-FILE_NAME = 'ActualDataFeb2020 .xlsx'
+FILE_NAME = 'ActualDataFeb2020.xlsx'
 TIMEOUT = 5
 
 if __name__ == "__main__":
@@ -18,7 +18,7 @@ if __name__ == "__main__":
 	node = server.get_objects_node()
 
 	#добавление объекта
-	Param = node.add_object(addspace, 'Parameters')
+	Param = node.add_object(addspace, 'WATER')
 
 	data = pd.read_excel(FILE_NAME)
 
@@ -34,12 +34,12 @@ if __name__ == "__main__":
 	
 	server.start()
 	print('Server started at {}'.format(URL))
-	print('Put enter to transfer data')
-	input()
+	#print('Put enter to transfer data')
+	#input()
 
 	for i in range (1, len(data)):
-		for j, var in enumerate(variables):
-			var.set_value(table[i, j])
+		for j, var in list(enumerate(variables))[1:]:
+			var.set_value((str(table[i, j])))
 		print(i, " line sent")
 		time.sleep(TIMEOUT)
 

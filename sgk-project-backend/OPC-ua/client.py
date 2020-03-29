@@ -1,14 +1,15 @@
 from opcua import Client
 import time
+import pika
 from opcua.tools import embed
 
 URL = 'opc.tcp://0.0.0.0:4840'
 PERIOD = 100
 
-#словарь с именами параметров
 params = {}
 #лист с данными
 total = []
+channel = ''
 
 class SubHandler(object):
 
@@ -20,15 +21,28 @@ class SubHandler(object):
 	#в итоге закинул имена параметров в словарь params - {nodeid, param_name}
 	def datachange_notification(self, node, val, data):
 		total.append((params[node.nodeid.Identifier] , val))
+		channel.basic_publish(exchange= '',
+		routing_key='route_in', 
+		body='HI', 
+		properties = pika.BasicProperties(delivery_mode=2))
 
 if __name__ == "__main__":
 
 	client = Client(URL)
 
 	try:
+		time.sleep(15)
 		client.connect()
 		print('Client connected')
 		root = client.get_root_node()
+
+		conn_params = pika.ConnectionParameters('rabbit', 5672)
+		connection = pika.BlockingConnection(conn_params)
+		channel = connection.channel()
+
+		channel.queue_declare(queue='in_queue',
+		arguments={'x-message-ttl':60000},
+		durable=True)
 
 		#список переменных нужного объекта
 		vars = root.get_children()[0].get_children()[1].get_variables()
