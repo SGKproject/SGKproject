@@ -8,7 +8,7 @@ PERIOD = 100
 
 params = {}
 #лист с данными
-_data = []
+total = []
 channel = ''
 
 class SubHandler(object):
@@ -20,7 +20,8 @@ class SubHandler(object):
 	#наверно при get_browse_name происходит обращение к серверу, а это дорого
 	#в итоге закинул имена параметров в словарь params - {nodeid, param_name}
 	def datachange_notification(self, node, val, data):
-		_data.append((params[node.nodeid.Identifier] , val))
+		total.append((params[node.nodeid.Identifier] , val))
+
 		#channel.basic_publish(exchange= '',
 		#routing_key='route_in', 
 		#body='HI', 
@@ -56,7 +57,7 @@ if __name__ == "__main__":
 		handle = sub.subscribe_data_change(vars)
 
 		#удобная замена while(True)
-		#причем в терминале можно работать с локальными переменными
+		#причем в терминале можно работать с локальными переменными в live режиме
 		embed()
 		for h in handle:
 			sub.unsubscribe(h)
