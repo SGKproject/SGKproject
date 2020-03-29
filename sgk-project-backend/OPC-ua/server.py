@@ -27,8 +27,8 @@ if __name__ == "__main__":
 
 	#список  с параметрами(типа 'node') из таблички
 	variables = []
-	for j, param in enumerate(data.columns.tolist()):
-		variables.append(Param.add_variable(addspace, param, table[0, j]))
+	for j, param in list(enumerate(data.columns.tolist()))[1:]:
+		variables.append(Param.add_variable(addspace, param, str(table[0, j]) + '/' + table[0, 0]))
 	for var in variables:
 		var.set_writable()
 	
@@ -38,8 +38,9 @@ if __name__ == "__main__":
 	#input()
 
 	for i in range (1, len(data)):
-		for j, var in list(enumerate(variables))[1:]:
-			var.set_value((str(table[i, j])))
+		for j, var in enumerate(variables):
+			#Данные размещаются в виде строки "значение  / дата", немного костыльно, так как list из 2 элементов передавать он не может
+			var.set_value(str(table[i, j + 1]) + ' | ' + table[i, 0])
 		print(i, " line sent")
 		time.sleep(TIMEOUT)
 
