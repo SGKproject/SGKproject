@@ -1,10 +1,10 @@
-version: '2.2'
+version: '3'
 services:
-  opcua:
-    image: "python:3.6"
-    ports: 
-     - "4840:4840"  
-     - "5672:5672"
+  server:
+    build: 
+      context: .
+      dockerfile: serverDocker
+    restart: always
   client:
     build: 
       context: .
@@ -12,8 +12,6 @@ services:
     restart: always
     depends_on: 
      - server
-  server:
-    build: 
-      context: .
-      dockerfile: serverDocker
-    restart: always
+    links:
+     - "server" 
+  

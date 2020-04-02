@@ -3,23 +3,21 @@ import time
 import pika
 from opcua.tools import embed
 
-URL = 'opc.tcp://0.0.0.0:4840'
+URL = 'opc.tcp://server:4840/'
 PERIOD = 100
 
 params = {}
-#лист с данными
 total = []
 channel = ''
 
 class SubHandler(object):
 
-	def event_notification(self, event):
-	    print("New event recived: ", event)
-	#пробовал в этом методе брать имя параметра, как node.get_browse_name().name
+    #пробовал в этом методе брать имя параметра, как node.get_browse_name().name
 	#но таким образом этот метод вообще перестает работать, происходит timeout постоянно
 	#наверно при get_browse_name происходит обращение к серверу, а это дорого
 	#в итоге закинул имена параметров в словарь params - {nodeid, param_name}
 	def datachange_notification(self, node, val, data):
+		print((params[node.nodeid.Identifier] , val))
 		total.append((params[node.nodeid.Identifier] , val))
 
 		#channel.basic_publish(exchange= '',
@@ -28,7 +26,6 @@ class SubHandler(object):
 		#properties = pika.BasicProperties(delivery_mode=2))
 
 if __name__ == "__main__":
-
 	client = Client(URL)
 
 	try:
@@ -54,12 +51,16 @@ if __name__ == "__main__":
 		#подписка на изменения среди данных параметров
 		msclt = SubHandler()
 		sub = client.create_subscription(PERIOD, msclt)
-		handle = sub.subscribe_data_change(vars)
+		handle_data = sub.subscribe_data_change(vars)
+		handle_events = sub.subscribe_events()
 
-		#удобная замена while(True)
+		while(True):
+			a = 1
+
+		#embed - это терминал, он был в примерах библиотеки opcua вместо while(True)
 		#причем в терминале можно работать с локальными переменными в live режиме
 		embed()
-		for h in handle:
+		for h in handle_data:
 			sub.unsubscribe(h)
 		sub.delete()
 	finally:

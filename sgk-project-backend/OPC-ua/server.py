@@ -5,7 +5,7 @@ import time
 import pandas as pd
 from IPython import embed
 
-URL = 'opc.tcp://0.0.0.0:4840'
+URL = 'opc.tcp://0.0.0.0:4840/'
 FILE_NAME = 'ActualDataFeb2020.xlsx'
 TIMEOUT = 5
 
@@ -16,7 +16,7 @@ if __name__ == "__main__":
 	server.set_endpoint(URL)
 	addspace = server.register_namespace(name)
 	node = server.get_objects_node()
-
+	print("||||||||||||||")
 	#добавление объекта
 	Param = node.add_object(addspace, 'WATER')
 

@@ -4,6 +4,7 @@ RUN pip install opcua IPython cryptography xlrd pandas
 WORKDIR /code
 COPY server.py /code
 COPY ActualDataFeb2020.xlsx /code
+COPY wait-for-it.sh /code
 EXPOSE 4840
 
 CMD ["python", "/code/server.py"]
