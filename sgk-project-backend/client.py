@@ -2,7 +2,7 @@
 from opcua import Client
 import pickle
 import pika
-#from opcua.tools import embed
+
 
 URL = 'opc.tcp://server:4840/'
 PERIOD = 100
@@ -36,9 +36,6 @@ class SubHandler(object):
                               routing_key='route_in',
                               body=(pickle.dumps(body, 0)).decode(),
                               properties=pika.BasicProperties(delivery_mode=2))
-    # channel.basic_publish(exchange= '',
-    # body='HI',
-    # properties = pika.BasicProperties(delivery_mode=2))
 
 
 if __name__ == "__main__":
@@ -48,14 +45,6 @@ if __name__ == "__main__":
         client.connect()
         print('Client connected')
         root = client.get_root_node()
-
-        # conn_params = pika.ConnectionParameters('rabbit', 5672)
-        # connection = pika.BlockingConnection(conn_params)
-        # channel = connection.channel()
-
-        # channel.queue_declare(queue='in_queue',
-        # arguments={'x-message-ttl':60000},
-        # durable=True)
 
         # список переменных нужного объекта
         vars = root.get_children()[0].get_children()[1].get_variables()
@@ -73,11 +62,5 @@ if __name__ == "__main__":
         while (True):
             a = 1
 
-        # embed - это терминал, он был в примерах библиотеки opcua вместо while(True)
-        # причем в терминале можно работать с локальными переменными в live режиме
-        # embed()
-        # for h in handle_data:
-        #     sub.unsubscribe(h)
-        # sub.delete()
     finally:
         client.disconnect()

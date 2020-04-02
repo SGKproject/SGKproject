@@ -34,8 +34,6 @@ if __name__ == "__main__":
 
     server.start()
     print('Server started at {}'.format(URL))
-    # print('Put enter to transfer data')
-    # input()
 
     for i in range(1, len(data)):
         for j, var in enumerate(variables):
