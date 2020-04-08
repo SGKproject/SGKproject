@@ -28,10 +28,12 @@ class SubHandler(object):
     # в итоге закинул имена параметров в словарь params - {nodeid, param_name}
     @staticmethod
     def datachange_notification(node, val, data):
-        print((params[node.nodeid.Identifier], val))
-        total.append((params[node.nodeid.Identifier], val))
+        # encoded_data = pickle.loads(val.encode())
+        encoded_data = pickle.loads(val.encode())
+        print( (params[node.nodeid.Identifier],) + encoded_data)
+        # total.append((params[node.nodeid.Identifier], encoded_data))
 
-        body= str((params[node.nodeid.Identifier], val))
+        body = (params[node.nodeid.Identifier],) + encoded_data
         channel.basic_publish(exchange='',
                               routing_key='route_in',
                               body=(pickle.dumps(body, 0)).decode(),
@@ -61,6 +63,7 @@ if __name__ == "__main__":
 
         while (True):
             a = 1
+
 
     finally:
         client.disconnect()

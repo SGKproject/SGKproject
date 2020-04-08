@@ -8,4 +8,4 @@ COPY client.py /code
 COPY wait-for-it.sh /code
 EXPOSE 4840
 
-CMD ["/code/wait-for-it.sh", "server:4840", "--", "python", "-u", "/code/client.py"]
+CMD ["/code/wait-for-it.sh", "server:4840", "--","/code/wait-for-it.sh", "rabbit:5672", "--", "python", "-u", "/code/client.py"]
