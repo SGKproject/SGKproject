@@ -2,7 +2,10 @@
 from opcua import Client
 import pickle
 import pika
+from sys import exit
 
+if __name__ != "__main__":
+    exit(1)
 
 URL = 'opc.tcp://server:4840/'
 PERIOD = 100
@@ -16,7 +19,7 @@ connection = pika.BlockingConnection(conn_params)
 channel = connection.channel()
 
 channel.queue_declare(queue='route_in',
-                      arguments={'x-message-ttl': 60000},
+                      arguments={'x-message-ttl': 1200},
                       durable=True)
 
 
@@ -30,7 +33,7 @@ class SubHandler(object):
     def datachange_notification(node, val, data):
         # encoded_data = pickle.loads(val.encode())
         encoded_data = pickle.loads(val.encode())
-        print( (params[node.nodeid.Identifier],) + encoded_data)
+        print((params[node.nodeid.Identifier],) + encoded_data)
         # total.append((params[node.nodeid.Identifier], encoded_data))
 
         body = (params[node.nodeid.Identifier],) + encoded_data
@@ -40,30 +43,30 @@ class SubHandler(object):
                               properties=pika.BasicProperties(delivery_mode=2))
 
 
-if __name__ == "__main__":
-    client = Client(URL)
 
-    try:
-        client.connect()
-        print('Client connected')
-        root = client.get_root_node()
+client = Client(URL)
 
-        # список переменных нужного объекта
-        vars = root.get_children()[0].get_children()[1].get_variables()
+try:
+    client.connect()
+    print('Client connected')
+    root = client.get_root_node()
 
-        # добавляю в словарь имена параметров
-        for var in vars:
-            params[var.nodeid.Identifier] = var.get_browse_name().Name
+    # список переменных нужного объекта
+    vars = root.get_children()[0].get_children()[1].get_variables()
 
-        # подписка на изменения среди данных параметров
-        msclt = SubHandler()
-        sub = client.create_subscription(PERIOD, msclt)
-        handle_data = sub.subscribe_data_change(vars)
-        handle_events = sub.subscribe_events()
+    # добавляю в словарь имена параметров
+    for var in vars:
+        params[var.nodeid.Identifier] = var.get_browse_name().Name
 
-        while (True):
-            a = 1
+    # подписка на изменения среди данных параметров
+    msclt = SubHandler()
+    sub = client.create_subscription(PERIOD, msclt)
+    handle_data = sub.subscribe_data_change(vars)
+    handle_events = sub.subscribe_events()
+
+    while (True):
+        a = 1
 
 
-    finally:
-        client.disconnect()
+finally:
+    client.disconnect()
