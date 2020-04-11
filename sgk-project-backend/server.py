@@ -1,3 +1,4 @@
+# coding=utf-8
 from opcua import ua
 from opcua import Server
 import datetime

@@ -4,18 +4,18 @@ import sys
 import pickle
 import traceback
 
-
 class Data:
     max_depth = 15
     empty_val = np.nan
 
     def __init__(self):
         self.names = []
-        self.values = np.empty()
+        self.record_times = np.zeros((Data.max_depth, 1))
+        self.values = np.empty((Data.max_depth, 0))
         self.depth = 0
         self.time_cur = 0
 
-    def put_data(self, time, name, val):
+    def put(self, time, name, val):
 
         if name not in self.names:
             self.names.append(name)
@@ -26,11 +26,13 @@ class Data:
         index_val = self.names.index(name)
 
         if time > self.time_cur:
+            self.record_times = Data.shift(self.record_times, -1, Data.empty_val)
+            self.record_times[Data.max_depth - 1] = time
             self.time_cur = time
-            self.values = shift(self.values, -1, Data.empty_val)
-            self.values[max_depth - 1, index_val] = val
+            self.values = Data.shift(self.values, -1, Data.empty_val)
+            self.values[Data.max_depth - 1, index_val] = val
             self.depth += 1
-        elif time == time_cur:
+        elif time == self.time_cur:
             self.values[Data.max_depth - 1, index_val] = val
 
     @staticmethod
