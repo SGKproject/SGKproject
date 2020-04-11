@@ -3,6 +3,9 @@ import pika
 import sys
 import pickle
 import traceback
+import copy
+import numpy as np
+
 
 class Data:
     max_depth = 15
@@ -15,7 +18,7 @@ class Data:
         self.depth = 0
         self.time_cur = 0
 
-    def put(self, time, name, val):
+    def put(self, name, val, time):
 
         if name not in self.names:
             self.names.append(name)
@@ -59,9 +62,12 @@ channel.exchange_declare(exchange='out_route',
                          exchange_type='topic')
 
 # маршрутизация
-channel.queue_declare(queue='route_in',
-                      arguments={'x-message-ttl': 1200},
+channel.queue_declare(queue='route_in1111',
+                      arguments={'x-message-ttl': 60000},
                       durable=True)
+
+# инициализируем буфер данных
+data = Data()
 
 print("Waiting for messages for routing to маршрутизация. To exit press CTRL+C")
 
@@ -81,7 +87,19 @@ def callback(ch, method, properties, body):
     print("Sent {}:{}".format(routing_key_info, body))
 
     # здесь - тело маршрутизатора должно быть
+
+    # аргументы в tuple в том же порядке
+    data.put(*body)
+
     print("Received: {}".format(body))
+
+    print("Data now:")
+    intermed = np.concatenate((data.record_times, data.values), axis=1)
+    intermed_names = ["time"]
+    intermed_names.extend(data.names)
+
+    print(intermed_names)
+    print(intermed)
 
     # функция выгрузки данных объекта
     # отправляем отработанные данные в тестирование
@@ -93,7 +111,7 @@ def callback(ch, method, properties, body):
 
 
 channel.basic_consume(on_message_callback=callback,
-                      queue='route_in',
+                      queue='route_in1111',
                       auto_ack=True)
 
 try:

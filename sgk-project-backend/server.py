@@ -14,7 +14,7 @@ if __name__ != "__main__":
 
 URL = 'opc.tcp://0.0.0.0:4840/'
 FILE_NAME = 'ActualDataFeb2020.xlsx'
-TIMEOUT = 5
+TIMEOUT = 20
 
 
 

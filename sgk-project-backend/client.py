@@ -18,8 +18,8 @@ conn_params = pika.ConnectionParameters('rabbit', 5672)
 connection = pika.BlockingConnection(conn_params)
 channel = connection.channel()
 
-channel.queue_declare(queue='route_in',
-                      arguments={'x-message-ttl': 1200},
+channel.queue_declare(queue='route_in1111',
+                      arguments={'x-message-ttl': 60000},
                       durable=True)
 
 
@@ -38,7 +38,7 @@ class SubHandler(object):
 
         body = (params[node.nodeid.Identifier],) + encoded_data
         channel.basic_publish(exchange='',
-                              routing_key='route_in',
+                              routing_key='route_in1111',
                               body=(pickle.dumps(body, 0)).decode(),
                               properties=pika.BasicProperties(delivery_mode=2))
 
