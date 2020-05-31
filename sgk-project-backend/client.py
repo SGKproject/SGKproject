@@ -37,9 +37,10 @@ class SubHandler(object):
         # total.append((params[node.nodeid.Identifier], encoded_data))
 
         body = (params[node.nodeid.Identifier],) + encoded_data
+
         channel.basic_publish(exchange='',
                               routing_key='route_in1111',
-                              body=(pickle.dumps(body, 0)).decode(),
+                              body=(pickle.dumps(body, 0)),
                               properties=pika.BasicProperties(delivery_mode=2))
 
 

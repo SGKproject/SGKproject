@@ -18,7 +18,9 @@ class Data:
         self.depth = 0
         self.time_cur = 0
 
-    def put(self, name, val, time):
+    def put(self, name, val, time_str):
+
+        time = Data.convert_time(time_str)
 
         if name not in self.names:
             self.names.append(name)
@@ -39,6 +41,14 @@ class Data:
             self.values[Data.max_depth - 1, index_val] = val
 
     @staticmethod
+    def convert_time(time_str):
+        result = time_str.replace('.', '')
+        result = result.replace(':', '')
+        result = result.replace('-', '')
+        result = result.replace(' ', '')
+        return int(result)
+
+    @staticmethod
     def shift(arr, num, fill_value=np.nan):
         result = np.empty_like(arr)
         if num > 0:
@@ -50,6 +60,7 @@ class Data:
         else:
             result = arr
         return result
+
 
 
 # подключение к кролику
@@ -67,7 +78,7 @@ channel.queue_declare(queue='route_in1111',
                       durable=True)
 
 # инициализируем буфер данных
-data = Data()
+data1 = Data()
 
 print("Waiting for messages for routing to маршрутизация. To exit press CTRL+C")
 
@@ -76,7 +87,9 @@ def callback(ch, method, properties, body):
     # функция загрузки данных объекта
     # далее пример для 1 параметра для показа функциональности
     # отправляем сырые данные в тестирование
-    body = pickle.loads(body.encode())
+    print("!!!", body)
+    print("&&&", pickle.loads(body))
+    body = pickle.loads(body)
     channel.basic_publish(exchange='out_route',
                           routing_key='out_route_wet',
                           body=(pickle.dumps(body, 0)).decode(),
@@ -89,14 +102,14 @@ def callback(ch, method, properties, body):
     # здесь - тело маршрутизатора должно быть
 
     # аргументы в tuple в том же порядке
-    data.put(*body)
+    data1.put(*body)
 
     print("Received: {}".format(body))
 
     print("Data now:")
-    intermed = np.concatenate((data.record_times, data.values), axis=1)
+    intermed = np.concatenate((data1.record_times, data1.values), axis=1)
     intermed_names = ["time"]
-    intermed_names.extend(data.names)
+    intermed_names.extend(data1.names)
 
     print(intermed_names)
     print(intermed)
